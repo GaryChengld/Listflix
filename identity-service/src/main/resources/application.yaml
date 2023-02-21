@@ -9,9 +9,4 @@ spring:
     driver-class-name: org.postgresql.Driver
 
 logging:
-  level:
-    org.springframework: ERROR
-    org.hibernate: ERROR
-    root: INFO
-  file:
-    name: ./logs/app.log
+  config: ./configuration/logback.xml

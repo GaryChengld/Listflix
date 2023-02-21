@@ -1,0 +1,26 @@
+<configuration>
+  <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d %p %c{1.} [%t] %m%n</pattern>
+    </encoder>
+  </appender>
+  <appender name="fileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>logs/identity-service.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>logs/identity-service-%d{yyyy-MM-dd}.log</fileNamePattern>
+      <maxHistory>30</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} %-5level [%thread] %c{1.} - %m%n</pattern>
+    </encoder>
+  </appender>
+
+  <root level="info">
+    <appender-ref ref="consoleAppender" />
+    <appender-ref ref="fileAppender"/>
+  </root>
+
+  <logger name="org.springframework" level="error" />
+  <logger name="org.hibernate" level="error" />
+  <logger name="com.gcsi" level="debug" />
+</configuration>
