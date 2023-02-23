@@ -2,7 +2,7 @@ version: '3'
 services:
   db:
     image: postgres:13-alpine
-    container_name: "postgresql"
+    container_name: "identity-db"
     restart: unless-stopped
     environment:
       POSTGRES_USER: admin
@@ -11,7 +11,7 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - pg-data:/var/lib/postgresql/data
+      - identity-db-data:/var/lib/postgresql/data
 
   pgadmin:
     container_name: pgadmin4
@@ -29,6 +29,7 @@ services:
     container_name: identity-service
     build: ./identity-service
     image: identity-service:0.0.1
+    restart: unless-stopped
     environment:
       - TZ=America/New_York
     ports:
@@ -37,7 +38,7 @@ services:
       - c:/var/ListFlix/logs:/app/logs
 
 volumes:
-  pg-data:
+  identity-db-data:
     external: true
   pgadmin-data:
     external: true
