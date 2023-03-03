@@ -22,5 +22,4 @@ public class Users {
     private String passwordHash;
     private Date createdAt;
     private Date updatedAt;
-    
 }
