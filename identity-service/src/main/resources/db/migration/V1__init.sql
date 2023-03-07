@@ -1,28 +1,33 @@
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    username TEXT NOT NULL,
-    email TEXT NOT NULL UNIQUE,
-    password_hash TEXT,
-    google_id TEXT,
+    username VARCHAR(255) UNIQUE NOT NULL,
+    email varchar(255) NOT NULL UNIQUE,
+    password_hash varchar(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE TABLE auth_providers (
-    name VARCHAR(255) PRIMARY KEY,
-    client_id VARCHAR(255),
-    client_secret VARCHAR(255)
-);
-
-CREATE TABLE user_auth_providers (
+CREATE TABLE social_providers (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL,
-    auth_provider_name TEXT NOT NULL,
-    access_token VARCHAR(255),
-    refresh_token VARCHAR(255),
-    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-    FOREIGN KEY (auth_provider_name) REFERENCES auth_providers (name) ON DELETE CASCADE
+    provider_name VARCHAR(255) UNIQUE NOT NULL
 );
 
+CREATE TABLE social_accounts (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    provider_id INTEGER REFERENCES social_providers(id) ON DELETE CASCADE,
+    user_reference_id VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE login_sessions (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    token TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    expired_at TIMESTAMP NOT NULL,
+    source VARCHAR(255) NOT NULL
+);
 
 

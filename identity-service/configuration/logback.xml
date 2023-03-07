@@ -20,7 +20,7 @@
     <appender-ref ref="fileAppender"/>
   </root>
 
-  <logger name="org.springframework" level="error" />
+  <logger name="org.springframework" level="info" />
   <logger name="org.hibernate" level="error" />
   <logger name="com.gcsi" level="debug" />
 </configuration>
