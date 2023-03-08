@@ -2,11 +2,13 @@ server:
   port: 8080
 
 spring:
-  datasource:
+  r2dbc:
     url: ${DATABASE_URL}
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
-    driver-class-name: org.postgresql.Driver
-
+  data:
+    jpa:
+      repositories:
+        enabled: false
 logging:
   config: ./configuration/logback.xml
