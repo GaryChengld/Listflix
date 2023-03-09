@@ -1,35 +1,35 @@
 package com.gcsi.listflix.identity.domain;
 
 import lombok.Data;
+import org.springframework.data.annotation.*;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
  * @author Gary Cheng
  */
-@Entity
-@Table(name = "social_accounts")
+@Table("social_accounts")
 @Data
 public class SocialAccount {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column("user_id")
+    private Long userId;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column("provider_id")
+    private Long providerId;
 
-    @ManyToOne
-    @JoinColumn(name = "provider_id", nullable = false)
-    private SocialProvider provider;
-
-    @Column(name = "user_reference_id", nullable = false)
+    @Column("user_reference_id")
     private String userReferenceId;
 
-    @Column(name = "created_at")
+    @Column("created_at")
+    @CreatedDate
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @Column("updated_at")
+    @LastModifiedDate
+    @Version
     private LocalDateTime updatedAt;
 }

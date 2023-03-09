@@ -1,32 +1,41 @@
 package com.gcsi.listflix.identity.domain;
 
 import lombok.Data;
+import lombok.ToString;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.Version;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
  * @author Gary Cheng
  */
-@Entity
-@Table(name = "users")
+@Table("users")
 @Data
+@ToString
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "username", nullable = false)
+    @Column("username")
     private String username;
 
-    @Column(name = "email", nullable = false)
+    @Column("email")
     private String email;
 
-    @Column(name = "passwordHash")
+    @Column("passwordHash")
     private String passwordHash;
 
-    @Column(name = "created_at")
+    @Column("created_at")
+    @CreatedDate
     private LocalDateTime createdAt;
-    @Column(name = "updated_at")
-    private LocalDateTime  updatedAt;
+
+    @Column("updated_at")
+    @LastModifiedDate
+    @Version
+    private LocalDateTime updatedAt;
 }
