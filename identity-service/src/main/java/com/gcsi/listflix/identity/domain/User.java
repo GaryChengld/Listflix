@@ -2,14 +2,13 @@ package com.gcsi.listflix.identity.domain;
 
 import lombok.Data;
 import lombok.ToString;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.annotation.Version;
+import org.springframework.data.annotation.*;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * @author Gary Cheng
@@ -20,14 +19,17 @@ import java.time.LocalDateTime;
 public class User {
 
     @Id
-    private Long id;
+    private UUID id;
     @Column("username")
+    @NotBlank
     private String username;
 
     @Column("email")
+    @NotBlank
     private String email;
 
     @Column("passwordHash")
+    @NotBlank
     private String passwordHash;
 
     @Column("created_at")
@@ -38,4 +40,9 @@ public class User {
     @LastModifiedDate
     @Version
     private LocalDateTime updatedAt;
+
+    @Transient
+    public String getStringId() {
+        return null == id ? null : id.toString();
+    }
 }
