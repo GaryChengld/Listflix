@@ -3,12 +3,12 @@ server:
 
 spring:
   r2dbc:
-    url: ${DATABASE_URL}
+    url: r2dbc:${DATABASE_URL}
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
-  data:
-    jpa:
-      repositories:
-        enabled: false
+  flyway:
+    url: jdbc:${DATABASE_URL}
+    user: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
 logging:
   config: ./configuration/logback.xml
