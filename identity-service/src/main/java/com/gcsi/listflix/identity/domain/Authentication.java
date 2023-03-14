@@ -13,25 +13,24 @@ import java.util.UUID;
 /**
  * @author Gary Cheng
  */
-@Table("users")
+@Table(name = "authentications")
 @Data
 @ToString
-public class User {
-
+public class Authentication {
     @Id
     private UUID id;
 
-    @Column("email")
+    @Column("identifier")
     @NotBlank
-    private String email;
+    private String identifier;
 
-    @Column("lastname")
+    @Column("authentication_provider")
     @NotBlank
-    private String lastname;
+    private String authenticationProvider;
 
-    @Column("firstname")
+    @Column("password_hash")
     @NotBlank
-    private String firstname;
+    private String passwordHash;
 
     @Column("created_at")
     @CreatedDate
@@ -42,4 +41,8 @@ public class User {
     @Version
     private LocalDateTime updatedAt;
 
+    @Transient
+    public String getStringId() {
+        return null == id ? null : id.toString();
+    }
 }
