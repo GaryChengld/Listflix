@@ -14,11 +14,4 @@ public interface UserRepository extends R2dbcRepository<User, Long> {
      * @return the user
      */
     Mono<User> findByEmail(String email);
-
-    /**
-     * Find user by username.
-     * @param username user's username
-     * @return the user
-     */
-    Mono<User> findByUsername(String username);
 }
