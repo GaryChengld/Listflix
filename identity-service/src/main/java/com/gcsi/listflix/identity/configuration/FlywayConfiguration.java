@@ -1,22 +1,18 @@
-package com.gcsi.listflix.identity;
+package com.gcsi.listflix.identity.configuration;
 
 import org.flywaydb.core.Flyway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.data.r2dbc.config.EnableR2dbcAuditing;
 
 /**
  * @author Gary Cheng
  */
 @Configuration
-@EnableR2dbcAuditing
-@PropertySource("file:./env.properties")
-public class AppConfiguration {
+public class FlywayConfiguration {
     private final Environment env;
 
-    public AppConfiguration(Environment env) {
+    public FlywayConfiguration(Environment env) {
         this.env = env;
     }
 

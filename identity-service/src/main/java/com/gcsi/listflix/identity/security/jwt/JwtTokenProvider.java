@@ -1,25 +1,20 @@
-package com.gcsi.listflix.identity.jwt;
+package com.gcsi.listflix.identity.security.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.Collection;
 import java.util.Date;
-import java.util.Map;
 
 import static java.util.stream.Collectors.joining;
 
@@ -28,19 +23,15 @@ import static java.util.stream.Collectors.joining;
  */
 @Component
 @Slf4j
-public class JwtTokenProvider implements InitializingBean {
+public class JwtTokenProvider {
     private static final String AUTHORITIES_KEY = "roles";
-    @Value("${jwt.secret}")
-    private String secret;
 
-    @Value("${jwt.expiration}")
     private Long expirationTime;
-
     private Key secretKey;
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        this.secretKey = Keys.hmacShaKeyFor(this.secret.getBytes(StandardCharsets.UTF_8));
+    public JwtTokenProvider(@Value("${jwt.secret}") String secret, @Value("${jwt.expiration}") Long expirationTime) {
+        this.expirationTime = expirationTime;
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
     public String generateToken(Authentication authentication) {
@@ -62,21 +53,24 @@ public class JwtTokenProvider implements InitializingBean {
     public Authentication getAuthentication(String token) {
         Claims claims = Jwts.parserBuilder().setSigningKey(this.secretKey).build()
                 .parseClaimsJws(token).getBody();
-
         Object authoritiesClaim = claims.get(AUTHORITIES_KEY);
-
         Collection<? extends GrantedAuthority> authorities = authoritiesClaim == null
                 ? AuthorityUtils.NO_AUTHORITIES
-                : AuthorityUtils
-                .commaSeparatedStringToAuthorityList(authoritiesClaim.toString());
-
-        User principal = new SecurityProperties.User(claims.getSubject(), "", authorities);
-
+                : AuthorityUtils.commaSeparatedStringToAuthorityList(authoritiesClaim.toString());
+        User principal = new User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    public Boolean validateToken(String token) {
+        try {
+            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(this.secretKey)
+                    .build().parseClaimsJws(token);
+            // parseClaimsJws will check expiration date. No need do here.
+            log.info("Token expiration date: {}", claims.getBody().getExpiration());
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            log.error("Invalid JWT token: {}", e.getMessage());
+        }
+        return false;
     }
 }
