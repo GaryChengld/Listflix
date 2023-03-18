@@ -10,5 +10,9 @@ spring:
     url: jdbc:${DATABASE_URL}
     user: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
+jwt:
+  secret: tYhCKqe85Km3nUvhJa7qGKK08z1p2L8Z8vjn2dTuNsTmYT1aKFaapqBwpgjaSfGp
+  # token is valid 24 hours (86400 seconds)
+  expiration: 86400
 logging:
   config: ./configuration/logback.xml

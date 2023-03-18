@@ -25,13 +25,13 @@ public class User {
     @NotBlank
     private String email;
 
-    @Column("lastname")
+    @Column("authentication_provider")
     @NotBlank
-    private String lastname;
+    private String authenticationProvider;
 
-    @Column("firstname")
+    @Column("password_hash")
     @NotBlank
-    private String firstname;
+    private String passwordHash;
 
     @Column("created_at")
     @CreatedDate
