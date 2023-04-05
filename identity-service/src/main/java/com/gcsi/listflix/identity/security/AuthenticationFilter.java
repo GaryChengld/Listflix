@@ -1,5 +1,6 @@
-package com.gcsi.listflix.identity.security.jwt;
+package com.gcsi.listflix.identity.security;
 
+import com.gcsi.listflix.identity.security.jwt.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -16,12 +17,12 @@ import reactor.core.publisher.Mono;
  * @author Gary Cheng
  */
 @Component
-public class JwtTokenAuthenticationFilter implements WebFilter {
+public class AuthenticationFilter implements WebFilter {
     public static final String HEADER_PREFIX = "Bearer ";
     private JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    public JwtTokenAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
+    public AuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 

@@ -24,6 +24,10 @@ public class UserDetailsService implements ReactiveUserDetailsService {
     public Mono<UserDetails> findByUsername(String username) {
         return userRepository.findByEmail(username)
                 .switchIfEmpty(Mono.error(new UsernameNotFoundException("User not found")))
-                .map(user -> org.springframework.security.core.userdetails.User.withUsername(username).authorities("USER").build());
+                .map(user -> org.springframework.security.core.userdetails.User.builder()
+                        .username(username)
+                        .password(user.getPasswordHash())
+                        .roles("USER")
+                        .build());
     }
 }
