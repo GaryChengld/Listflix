@@ -27,7 +27,7 @@ public class UserDetailsService implements ReactiveUserDetailsService {
                 .map(user -> org.springframework.security.core.userdetails.User.builder()
                         .username(username)
                         .password(user.getPasswordHash())
-                        .roles("USER")
+                        .authorities("USER")
                         .build());
     }
 }

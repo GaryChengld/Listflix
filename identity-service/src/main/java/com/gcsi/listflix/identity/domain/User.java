@@ -39,7 +39,6 @@ public class User {
 
     @Column("updated_at")
     @LastModifiedDate
-    @Version
     private LocalDateTime updatedAt;
 
 }
