@@ -5,6 +5,6 @@ CREATE TABLE users (
     email varchar(255) NOT NULL UNIQUE,
     authentication_provider varchar(64) NOT NULL,
     password_hash varchar(255),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()
 );

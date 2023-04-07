@@ -1,5 +1,6 @@
 package com.gcsi.listflix.identity.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.ToString;
 import org.springframework.data.annotation.*;
@@ -27,10 +28,12 @@ public class User {
 
     @Column("authentication_provider")
     @NotBlank
+    @JsonIgnore
     private String authenticationProvider;
 
     @Column("password_hash")
     @NotBlank
+    @JsonIgnore
     private String passwordHash;
 
     @Column("created_at")

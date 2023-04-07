@@ -28,12 +28,12 @@ public class UserController {
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/signup")
-    public Mono<String> signupUser(@RequestBody SignupRequest request) {
+    public Mono<User> signupUser(@RequestBody SignupRequest request) {
         log.debug("request:{}", request);
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         user.setAuthenticationProvider("local");
-        return userRepository.save(user).map(u-> u.getId().toString());
+        return userRepository.save(user);
     }
 }
