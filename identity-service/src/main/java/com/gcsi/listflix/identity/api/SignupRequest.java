@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * @author Gary Cheng
  */
@@ -13,7 +15,9 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SignupRequest {
+    @NotBlank
     private String email;
+    @NotBlank
     private String password;
 
 }
