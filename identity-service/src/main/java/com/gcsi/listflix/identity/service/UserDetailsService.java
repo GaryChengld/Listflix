@@ -30,4 +30,5 @@ public class UserDetailsService implements ReactiveUserDetailsService {
                         .authorities("USER")
                         .build());
     }
+
 }
