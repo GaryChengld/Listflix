@@ -1,5 +1,6 @@
 package com.gcsi.listflix.identity.api;
 
+import com.gcsi.listflix.identity.api.exception.UserAlreadyExistsException;
 import com.gcsi.listflix.identity.domain.User;
 import com.gcsi.listflix.identity.repository.UserRepository;
 import com.gcsi.listflix.identity.security.jwt.JwtTokenProvider;
@@ -36,16 +37,25 @@ public class UserController {
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/signup")
-    public Mono<AuthResponse> signupUser(@Valid @RequestBody SignupRequest request) {
+    public Mono<ApiResponse<AuthData>> signupUser(@Valid @RequestBody SignupRequest request) {
         log.debug("request:{}", request);
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-        user.setAuthenticationProvider("local");
-        return userRepository.save(user)
-                .flatMap(u -> userDetailsService.findByUsername(u.getEmail()))
-                .map(details -> new UsernamePasswordAuthenticationToken(details, details.getPassword(), details.getAuthorities()))
-                .map(jwtTokenProvider::generateToken)
-                .map(AuthResponse::new);
+        return userRepository.findByEmail(request.getEmail())
+                .hasElement()
+                .flatMap(exists -> {
+                    if (exists) {
+                        return Mono.error(new UserAlreadyExistsException("User with email already exists"));
+                    } else {
+                        User user = new User();
+                        user.setEmail(request.getEmail());
+                        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+                        user.setAuthenticationProvider("local");
+                        return userRepository.save(user)
+                                .flatMap(u -> userDetailsService.findByUsername(u.getEmail()))
+                                .map(details -> new UsernamePasswordAuthenticationToken(details, details.getPassword(), details.getAuthorities()))
+                                .map(jwtTokenProvider::generateToken)
+                                .map(AuthData::new)
+                                .map(authResponse -> new ApiResponse<>(authResponse));
+                    }
+                });
     }
 }
