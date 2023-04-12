@@ -4,6 +4,8 @@ import com.gcsi.listflix.identity.api.exception.UserAlreadyExistsException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -16,16 +18,22 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class ControllerExceptionHandler {
     @ExceptionHandler(UserAlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public Mono<ResponseEntity<ApiResponse>> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
-        ApiResponse errorResponse = new ApiResponse(ex.getMessage());
+    public Mono<ResponseEntity<ApiResponse<?>>> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
+        ApiResponse<?> errorResponse = ApiResponse.withError(ex.getMessage());
         return Mono.just(ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse));
     }
 
+    @ExceptionHandler(AuthenticationException.class)
+    public Mono<ResponseEntity<ApiResponse<?>>> handleBadCredentialsException(AuthenticationException ex) {
+        log.debug(ex.getMessage());
+        ApiResponse<?> errorResponse = ApiResponse.withError(ex.getMessage());
+        return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse));
+    }
+
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Mono<ResponseEntity<ApiResponse>> handleException(UserAlreadyExistsException ex) {
-        ApiResponse errorResponse = new ApiResponse(ex.getMessage());
+    public Mono<ResponseEntity<ApiResponse<?>>> handleException(Exception ex) {
+        log.debug(ex.getMessage());
+        ApiResponse<?> errorResponse = ApiResponse.withError(ex.getMessage());
         return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
     }
 }

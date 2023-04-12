@@ -45,7 +45,7 @@ public class SecurityConfigure {
                 .authenticationManager(authenticationManager)
                 .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
                 .authorizeExchange()
-                .pathMatchers("/api/v1/user/signin", "/api/v1/user/signup").permitAll()
+                .pathMatchers("/api/v1/user/signIn", "/api/v1/user/signup").permitAll()
                 .pathMatchers("/actuator").permitAll()
                 .anyExchange().authenticated()
                 .and()

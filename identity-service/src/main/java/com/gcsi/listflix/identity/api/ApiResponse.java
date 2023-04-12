@@ -12,11 +12,18 @@ public class ApiResponse<T> {
     private T data;
     private String errorMessage;
 
-    public ApiResponse(T data) {
-        this.data = data;
+    private ApiResponse() {
     }
 
-    public ApiResponse(String errorMessage) {
-        this.errorMessage = errorMessage;
+    public static <T> ApiResponse<T> withData(T data) {
+        ApiResponse<T> apiResponse = new ApiResponse<>();
+        apiResponse.setData(data);
+        return apiResponse;
+    }
+
+    public static <T> ApiResponse<T> withError(String errorMessage) {
+        ApiResponse<T> apiResponse = new ApiResponse<>();
+        apiResponse.setErrorMessage(errorMessage);
+        return apiResponse;
     }
 }
