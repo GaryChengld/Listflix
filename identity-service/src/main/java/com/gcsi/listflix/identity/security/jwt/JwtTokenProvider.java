@@ -36,7 +36,7 @@ public class JwtTokenProvider {
 
     public String generateToken(Authentication authentication) {
         Date now = new Date();
-        Date expiration = new Date(now.getTime() + expirationTime);
+        Date expiration = new Date(now.getTime() + expirationTime * 1000);
         Claims claims = Jwts.claims().setSubject(authentication.getName());
         if (!authentication.getAuthorities().isEmpty()) {
             claims.put(AUTHORITIES_KEY, authentication.getAuthorities().stream()

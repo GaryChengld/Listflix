@@ -24,9 +24,16 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public Mono<ResponseEntity<ApiResponse<?>>> handleBadCredentialsException(AuthenticationException ex) {
+    public Mono<ResponseEntity<ApiResponse<?>>> handleAuthenticationException(AuthenticationException ex) {
         log.debug(ex.getMessage());
         ApiResponse<?> errorResponse = ApiResponse.withError(ex.getMessage());
+        return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse));
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Mono<ResponseEntity<ApiResponse<?>>> handleUnauthorized(AuthenticationException ex) {
+        log.debug(ex.getMessage());
+        ApiResponse<?> errorResponse = ApiResponse.withError("Unauthorized");
         return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse));
     }
 

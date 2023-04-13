@@ -1,6 +1,7 @@
 package com.gcsi.listflix.identity.configuration;
 
 import com.gcsi.listflix.identity.security.AuthenticationFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
@@ -12,7 +13,9 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.ServerAuthenticationEntryPoint;
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
 
 /**
@@ -26,6 +29,9 @@ public class SecurityConfigure {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Autowired
+    private ServerAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Bean
     public ReactiveAuthenticationManager authenticationManager(ReactiveUserDetailsService userDetailsService,
@@ -46,8 +52,11 @@ public class SecurityConfigure {
                 .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
                 .authorizeExchange()
                 .pathMatchers("/api/v1/user/signIn", "/api/v1/user/signup").permitAll()
-                .pathMatchers("/actuator").permitAll()
+                .pathMatchers("/actuator/**").permitAll()
                 .anyExchange().authenticated()
+                .and()
+                .httpBasic()
+                .authenticationEntryPoint(customAuthenticationEntryPoint)
                 .and()
                 .addFilterAt(authenticationFilter, SecurityWebFiltersOrder.HTTP_BASIC)
                 .build();
