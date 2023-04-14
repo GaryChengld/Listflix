@@ -5,8 +5,11 @@ import com.gcsi.listflix.identity.domain.User;
 import com.gcsi.listflix.identity.repository.UserRepository;
 import com.gcsi.listflix.identity.security.jwt.JwtTokenProvider;
 import com.gcsi.listflix.identity.service.UserDetailsService;
+import com.gcsi.listflix.identity.util.WebUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -67,6 +70,13 @@ public class UserController {
     public Mono<ApiResponse<User>> me(@AuthenticationPrincipal Authentication authentication) {
         log.debug("me authentication:{}", authentication);
         return this.userRepository.findByEmail(authentication.getName()).map(ApiResponse::withData);
+    }
+
+    @GetMapping("/validate")
+    public Mono<ApiResponse<Boolean>> validate(ServerHttpRequest request) {
+        String token = WebUtils.resolveToken(request);
+        log.debug("Validate token:{}", token);
+        return Mono.just(ApiResponse.withData(Boolean.TRUE));
     }
 
     private User toUser(SignupRequest request) {
