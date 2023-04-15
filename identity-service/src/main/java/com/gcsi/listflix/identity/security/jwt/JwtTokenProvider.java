@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import static java.util.stream.Collectors.joining;
 
@@ -51,20 +52,15 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String token) {
-        Claims claims = Jwts.parserBuilder().setSigningKey(this.secretKey).build()
-                .parseClaimsJws(token).getBody();
-        Object authoritiesClaim = claims.get(AUTHORITIES_KEY);
-        Collection<? extends GrantedAuthority> authorities = authoritiesClaim == null
-                ? AuthorityUtils.NO_AUTHORITIES
-                : AuthorityUtils.commaSeparatedStringToAuthorityList(authoritiesClaim.toString());
+        Claims claims = this.getClaims(token).getBody();
+        List<GrantedAuthority> authorities = this.getAuthorities(claims);
         User principal = new User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
     public Boolean validateToken(String token) {
         try {
-            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(this.secretKey)
-                    .build().parseClaimsJws(token);
+            Jws<Claims> claims = this.getClaims(token);
             // parseClaimsJws will check expiration date. No need do here.
             log.info("Token expiration date: {}", claims.getBody().getExpiration());
             return true;
@@ -72,5 +68,19 @@ public class JwtTokenProvider {
             log.error("Invalid JWT token: {}", e.getMessage());
         }
         return false;
+    }
+
+    public List<GrantedAuthority> getAuthorities(String token) {
+        return this.getAuthorities(this.getClaims(token).getBody());
+    }
+
+    private Jws<Claims> getClaims(String token) {
+        return Jwts.parserBuilder().setSigningKey(this.secretKey).build().parseClaimsJws(token);
+    }
+    private List<GrantedAuthority> getAuthorities(Claims claims) {
+        Object authoritiesClaim = claims.get(AUTHORITIES_KEY);
+        return authoritiesClaim == null
+                ? AuthorityUtils.NO_AUTHORITIES
+                : AuthorityUtils.commaSeparatedStringToAuthorityList(authoritiesClaim.toString());
     }
 }

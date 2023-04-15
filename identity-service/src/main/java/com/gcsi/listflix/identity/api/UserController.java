@@ -8,7 +8,6 @@ import com.gcsi.listflix.identity.service.UserDetailsService;
 import com.gcsi.listflix.identity.util.WebUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -48,10 +47,7 @@ public class UserController {
                     } else {
                         return userRepository.save(this.toUser(request))
                                 .flatMap(u -> userDetailsService.findByUsername(u.getEmail()))
-                                .map(details -> new UsernamePasswordAuthenticationToken(details, details.getPassword(), details.getAuthorities()))
-                                .map(jwtTokenProvider::generateToken)
-                                .map(AuthData::new)
-                                .map(ApiResponse::withData);
+                                .flatMap(userDetails -> userDetailsToAuthDataResponse(Mono.just(userDetails)));
                     }
                 });
     }
@@ -72,11 +68,24 @@ public class UserController {
         return this.userRepository.findByEmail(authentication.getName()).map(ApiResponse::withData);
     }
 
-    @GetMapping("/validate")
-    public Mono<ApiResponse<Boolean>> validate(ServerHttpRequest request) {
+    @GetMapping("/validateRoles")
+    public Mono<ApiResponse<Boolean>> validateRoles(ServerHttpRequest request) {
         String token = WebUtils.resolveToken(request);
-        log.debug("Validate token:{}", token);
+        log.debug("Validate Roles token:{}", token);
         return Mono.just(ApiResponse.withData(Boolean.TRUE));
+    }
+
+    @GetMapping("/refreshToken")
+    public Mono<ApiResponse<AuthData>> refreshToken(@AuthenticationPrincipal Authentication authentication) {
+        log.debug("refreshToken user email:{}", authentication.getName());
+        return userDetailsService.findByUsername(authentication.getName()).flatMap(userDetails -> userDetailsToAuthDataResponse(Mono.just(userDetails)));
+    }
+
+    private Mono<ApiResponse<AuthData>> userDetailsToAuthDataResponse(Mono<UserDetails> userDetails) {
+        return userDetails.map(details -> new UsernamePasswordAuthenticationToken(userDetails, details.getPassword(), details.getAuthorities()))
+                .map(jwtTokenProvider::generateToken)
+                .map(AuthData::new)
+                .map(ApiResponse::withData);
     }
 
     private User toUser(SignupRequest request) {
