@@ -68,13 +68,6 @@ public class UserController {
         return this.userRepository.findByEmail(authentication.getName()).map(ApiResponse::withData);
     }
 
-    @GetMapping("/validateRoles")
-    public Mono<ApiResponse<Boolean>> validateRoles(ServerHttpRequest request) {
-        String token = WebUtils.resolveToken(request);
-        log.debug("Validate Roles token:{}", token);
-        return Mono.just(ApiResponse.withData(Boolean.TRUE));
-    }
-
     @GetMapping("/refreshToken")
     public Mono<ApiResponse<AuthData>> refreshToken(@AuthenticationPrincipal Authentication authentication) {
         log.debug("refreshToken user email:{}", authentication.getName());
