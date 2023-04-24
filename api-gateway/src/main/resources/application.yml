@@ -1,1 +1,14 @@
+server:
+  port: 8080
 
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: identity
+          uri: ${IDENTITY_SERVICE_URL}
+          predicates:
+            - Path=/api/v1/user/**
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
